@@ -1,0 +1,42 @@
+{
+  "name": "backend",
+  "module": "src/app.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/app.ts",
+    "start": "bun run src/app.ts",
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev",
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "lint:fix": "eslint --fix --ext .js,.ts,.tsx .",
+    "format": "prettier --write \"src/**/*.{js,ts,tsx}\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.6",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.30.0",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.6.2",
+    "prisma": "^6.10.1",
+    "typescript-eslint": "^8.35.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^0.19.9",
+    "@hono/zod-validator": "^0.7.0",
+    "@prisma/client": "^6.10.1",
+    "await-to-js": "^3.0.0",
+    "exceljs": "^4.4.0",
+    "hono": "^4.8.3",
+    "redis": "^5.5.6",
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.67"
+  }
+}

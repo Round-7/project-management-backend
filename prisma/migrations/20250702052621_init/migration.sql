@@ -9,4 +9,4 @@ CREATE TABLE "project" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "project_name_key" ON "project"("name"); 
+CREATE UNIQUE INDEX "project_name_key" ON "project"("name");

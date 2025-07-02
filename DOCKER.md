@@ -25,15 +25,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-### 3. 初始化数据库
-
-首次运行时，需要初始化数据库：
-
-```bash
-docker-compose exec backend bun run migrate
-```
-
-### 4. 访问API
+### 3. 访问API
 
 - 后端 API: http://服务器IP:8000
 
@@ -47,13 +39,13 @@ docker-compose exec backend bun run migrate
 
 ### 后端环境变量
 
-在`.env`文件或`docker-compose.yml`中为 backend 服务配置：
+在docker-compose.yml中配置了以下环境变量：
 
 ```yaml
 environment:
-  - NODE_ENV=production
+  - NODE_ENV=development
   - PORT=8000
-  - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/project_management
+  - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/municipal
   - REDIS_URL=redis://redis:6379
 ```
 
@@ -63,6 +55,47 @@ environment:
 
 - `postgres_data`: PostgreSQL 数据
 - `redis_data`: Redis 数据
+
+## 数据库迁移
+
+系统启动时会自动执行Prisma数据库迁移。如果需要手动执行迁移，可以使用以下命令：
+
+```bash
+docker-compose exec backend bunx prisma migrate deploy
+```
+
+## 故障排除
+
+### Prisma客户端初始化问题
+
+如果遇到以下错误：
+
+```
+error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.
+```
+
+可以通过以下步骤解决：
+
+1. 进入容器执行Prisma生成命令：
+
+```bash
+docker-compose exec backend bunx prisma generate
+```
+
+2. 重启服务：
+
+```bash
+docker-compose restart backend
+```
+
+### 数据库连接问题
+
+如果遇到数据库连接问题，请确保：
+
+1. PostgreSQL容器已正常启动
+2. 环境变量中的数据库URL格式正确
+3. 数据库名称为"municipal"
+4. 使用服务名称"postgres"作为主机名，而不是"localhost"
 
 ## 常用操作
 

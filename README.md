@@ -27,7 +27,7 @@ bun install
 复制`.env.example`文件并重命名为`.env`，然后配置必要的环境变量：
 
 ```
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/project_management
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/municipal
 REDIS_URL=redis://localhost:6379
 ```
 

@@ -16,7 +16,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=8000
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/project_management
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/municipal
       - REDIS_URL=redis://redis:6379
     volumes:
       - .:/app

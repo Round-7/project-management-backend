@@ -2,9 +2,9 @@ FROM oven/bun:latest
 
 # 安装系统依赖
 RUN apt-get update -y && \
-  apt-get install -y openssl curl && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
+    apt-get install -y openssl curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -26,18 +26,18 @@ EXPOSE 8000
 
 # 创建启动脚本
 RUN echo '#!/bin/sh\n\
-  echo "Waiting for database..."\n\
-  sleep 5\n\
-  \n\
-  echo "Regenerating Prisma client..."\n\
-  bunx prisma generate\n\
-  \n\
-  echo "Running migrations..."\n\
-  bunx prisma migrate deploy\n\
-  \n\
-  echo "Starting application..."\n\
-  bun run start\n\
-  ' > /app/start.sh && chmod +x /app/start.sh
+echo "Waiting for database..."\n\
+sleep 5\n\
+\n\
+echo "Regenerating Prisma client..."\n\
+bunx prisma generate\n\
+\n\
+echo "Running migrations..."\n\
+bunx prisma migrate deploy\n\
+\n\
+echo "Starting application..."\n\
+bun run start\n\
+' > /app/start.sh && chmod +x /app/start.sh
 
 # 启动应用
 CMD ["/app/start.sh"] 

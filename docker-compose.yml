@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: project-management-backend
+    restart: unless-stopped
     ports:
       - '8000:8000'
     depends_on:
@@ -18,14 +20,15 @@ services:
       - PORT=8000
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/municipal
       - REDIS_URL=redis://redis:6379
-    volumes:
-      - .:/app
-      - /app/node_modules
-    restart: unless-stopped
+    # 注意：不使用卷挂载，避免覆盖生成的prisma客户端
+    networks:
+      - app-network
 
   # PostgreSQL数据库
   postgres:
     image: postgres:16-alpine
+    container_name: project-management-postgres
+    restart: unless-stopped
     ports:
       - '5432:5432'
     environment:
@@ -39,11 +42,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+    networks:
+      - app-network
 
   # Redis缓存
   redis:
     image: redis:7-alpine
+    container_name: project-management-redis
+    restart: unless-stopped
     ports:
       - '6379:6379'
     volumes:
@@ -54,8 +60,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
-  redis_data: 
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge 

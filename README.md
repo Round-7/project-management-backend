@@ -11,41 +11,83 @@
 - Redis (缓存)
 - PostgreSQL
 
-## 快速开始
+## Docker 部署
 
-### 本地开发
+### 快速启动
 
-#### 1. 安装依赖
+使用 Docker Compose 可以一键启动整个后端环境（包括 PostgreSQL 和 Redis）：
 
 ```bash
-cd backend
+# 构建并启动服务
+docker compose up -d
+
+# 查看日志
+docker compose logs -f
+```
+
+### 环境变量
+
+Docker Compose 已经配置了所有必要的环境变量，无需手动配置。如果需要修改，可以编辑 `docker-compose.yml` 文件的 environment 部分：
+
+```yaml
+environment:
+  - NODE_ENV=development
+  - PORT=8000
+  - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/municipal
+  - REDIS_URL=redis://redis:6379
+```
+
+### 端口映射
+
+默认端口映射：
+- 后端 API：8000 -> 8000
+- PostgreSQL：5432 -> 5432
+- Redis：6379 -> 6379
+
+如需修改，请编辑 `docker-compose.yml` 文件的 ports 部分。
+
+## 本地开发环境
+
+### 环境准备
+
+1. 安装 Bun：[https://bun.sh/](https://bun.sh/)
+2. 安装 PostgreSQL
+3. 安装 Redis
+
+### 配置环境变量
+
+复制 `.env.example` 到 `.env` 并根据你的本地环境修改：
+
+```bash
+cp .env.example .env
+```
+
+### 安装依赖
+
+```bash
 bun install
 ```
 
-#### 2. 配置环境变量
+### 数据库迁移
 
-复制`.env.example`文件并重命名为`.env`，然后配置必要的环境变量：
-
-```
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/municipal
-REDIS_URL=redis://localhost:6379
+```bash
+bunx prisma generate
+bunx prisma migrate dev
 ```
 
-#### 3. 启动开发服务
+### 启动开发服务器
 
 ```bash
 bun run dev
 ```
 
-#### 4. 构建项目
+## API 文档
 
-```bash
-bun run build
+启动服务后，访问 Swagger UI：
+
 ```
-
-### Docker部署
-
-请参考 [Docker部署指南](./DOCKER.md) 进行部署和故障排除。
+http://localhost:8000/api/docs
+```
 
 ## 常见问题
 

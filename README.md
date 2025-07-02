@@ -45,7 +45,64 @@ bun run build
 
 ### Docker部署
 
-详见 [Docker 部署指南](DOCKER.md)
+请参考 [Docker部署指南](./DOCKER.md) 进行部署和故障排除。
+
+## 常见问题
+
+### Prisma客户端初始化问题
+
+如果遇到错误 `@prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.`，主要原因可能是：
+
+1. Docker容器内Prisma客户端未正确生成
+2. 挂载卷覆盖了容器内的node_modules和Prisma生成的文件
+3. OpenSSL依赖缺失
+4. 数据库连接URL配置错误
+
+解决方法详见 [Docker部署指南](./DOCKER.md)。
+
+## 开发环境设置
+
+1. 安装依赖
+
+```bash
+bun install
+```
+
+2. 生成Prisma客户端
+
+```bash
+bunx prisma generate
+```
+
+3. 创建并迁移数据库
+
+```bash
+bunx prisma migrate dev
+```
+
+4. 启动开发服务器
+
+```bash
+bun run dev
+```
+
+## 环境变量
+
+需要在`.env`文件中设置以下环境变量：
+
+```
+NODE_ENV=development
+PORT=8000
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/municipal
+REDIS_URL=redis://localhost:6379
+```
+
+对于Docker环境，使用`postgres`和`redis`作为主机名：
+
+```
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/municipal
+REDIS_URL=redis://redis:6379
+```
 
 ## API文档
 

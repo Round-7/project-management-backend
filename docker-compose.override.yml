@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    # 移除卷挂载，避免覆盖容器内的node_modules和prisma客户端
+    volumes: [] 

@@ -64,38 +64,119 @@ environment:
 docker-compose exec backend bunx prisma migrate deploy
 ```
 
-## 故障排除
+## 问题解决：Prisma客户端初始化
 
-### Prisma客户端初始化问题
+如果遇到错误 `@prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.`，请按照以下步骤解决：
 
-如果遇到以下错误：
+### 方法一：进入容器手动初始化
 
-```
-error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.
-```
-
-可以通过以下步骤解决：
-
-1. 进入容器执行Prisma生成命令：
+1. 确保容器已启动
 
 ```bash
-docker-compose exec backend bunx prisma generate
+docker ps
 ```
 
-2. 重启服务：
+2. 进入backend容器
 
 ```bash
-docker-compose restart backend
+docker exec -it backend sh
 ```
 
-### 数据库连接问题
+3. 在容器内执行以下命令
 
-如果遇到数据库连接问题，请确保：
+```bash
+cd /app
+bunx prisma generate
+bunx prisma migrate deploy
+```
 
-1. PostgreSQL容器已正常启动
-2. 环境变量中的数据库URL格式正确
-3. 数据库名称为"municipal"
-4. 使用服务名称"postgres"作为主机名，而不是"localhost"
+4. 重启容器
+
+```bash
+docker restart backend
+```
+
+### 方法二：修改Dockerfile
+
+如果方法一无法解决问题，请修改Dockerfile并重新构建：
+
+1. 确保Dockerfile中包含以下内容：
+
+```dockerfile
+FROM oven/bun:latest
+
+# 安装系统依赖
+RUN apt-get update -y && \
+    apt-get install -y openssl curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# 复制依赖相关文件
+COPY package.json bun.lock* ./
+COPY prisma ./prisma/
+
+# 安装依赖
+RUN bun install --frozen-lockfile
+
+# 先生成Prisma客户端
+RUN bunx prisma generate
+
+# 复制所有源代码和环境文件
+COPY . .
+
+# 暴露8000端口
+EXPOSE 8000
+
+# 创建启动脚本
+RUN echo '#!/bin/sh\n\
+echo "Waiting for database..."\n\
+sleep 5\n\
+\n\
+echo "Regenerating Prisma client..."\n\
+bunx prisma generate\n\
+\n\
+echo "Running migrations..."\n\
+bunx prisma migrate deploy\n\
+\n\
+echo "Starting application..."\n\
+bun run start\n\
+' > /app/start.sh && chmod +x /app/start.sh
+
+# 启动应用
+CMD ["/app/start.sh"]
+```
+
+2. 删除docker-compose.yml中的卷挂载（避免覆盖容器中的node_modules和Prisma生成的文件）
+
+```yaml
+services:
+  backend:
+    # ...其他配置...
+    volumes: [] # 移除卷挂载
+```
+
+3. 重新构建容器
+
+```bash
+docker compose build backend
+docker compose up -d
+```
+
+### 方法三：更改数据库连接URL
+
+如果使用的是docker-compose，确保DATABASE_URL使用服务名而不是localhost：
+
+```
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/municipal
+```
+
+而不是：
+
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/municipal
+```
 
 ## 常用操作
 

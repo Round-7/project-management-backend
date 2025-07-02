@@ -8,6 +8,7 @@
     "start": "bun run src/app.ts",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate dev",
+    "docker": "bun run generate && bun run migrate && bun run start",
     "lint": "eslint --ext .js,.ts,.tsx .",
     "lint:fix": "eslint --fix --ext .js,.ts,.tsx .",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\""
